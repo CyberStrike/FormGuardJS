@@ -2,8 +2,6 @@
 
 const FormGuard = {
 
-  _valid: true,
-
   form: null,
 
   registeredTraits: [],
@@ -49,11 +47,9 @@ const FormGuard = {
    */
 
   isInputValid: function ( input, option ) {
-    let valid = true;
 
     if (option.required) {
       if (!this._exists(input.value)) {
-        valid = false;
         this.errorMsgs.push(input.name + ' is required.');
       }
     }
@@ -72,15 +68,17 @@ const FormGuard = {
       this.validation.maximum.bind(this)(input, option)
     }
 
-    return valid;
   },
+
+  /**
+   * A collection of validation functions
+   */
 
   validation: {
      typeOf: function ( input, option )  {
       switch (option.type) {
         case 'number':
           if (!parseInt(input.value)) {
-            this.valid = false;
             this.errorMsgs.push(input.name + ' is not a ' + option.type + '.');
           }
           break;
@@ -91,14 +89,12 @@ const FormGuard = {
             var emailRegEx = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
             if ( !emailRegEx.test( input.value ) ) {
-              this._valid = false;
               this.errorMsgs.push(msg);
             }
           }
           break;
         default:
           if ( typeof(input.value) != option.type ) {
-            this._valid = false;
             this.errorMsgs.push(input.name + ' is not a ' + option.type + '.');
           }
       }
@@ -107,13 +103,11 @@ const FormGuard = {
       switch ( typeof(input.value) ) {
         case 'number':
           if ( input.value <= option.minimum ) {
-            this._valid = false;
             this.errorMsgs.push(input.name + 'must be greater than ' + option.minimum);
           }
           break;
         default:
           if ( input.value.length <= option.minimum ) {
-            this._valid = false;
             this.errorMsgs.push(`${input.name} must be longer than ${option.minimum} characters.`);
           }
       }
@@ -122,13 +116,11 @@ const FormGuard = {
       switch ( typeof(input.value) ) {
         case 'number':
           if ( input.value <= option.minimum ) {
-            this._valid = false;
             this.errorMsgs.push(input.name + 'must be less than ' + option.minimum);
           }
           break;
         default:
           if ( input.value.length <= option.minimum ) {
-            this._valid = false;
             this.errorMsgs.push(`${input.name} must be less than ${option.minimum} characters.`);
           }
       }
@@ -137,12 +129,13 @@ const FormGuard = {
 
   validate: function () {
     this.errorMsgs = [];
+
     for ( let el of this.registeredTraits ) {
       let formEl = this.form[el.name];
       this.isInputValid(formEl, el.traits)
     }
 
-    if ( this._exists(this.errorMsgs) ) {
+    if ( !this.isValid() ) {
       this.renderErrors();
       return Promise.reject(this.errorMsgs);
     }
@@ -150,21 +143,35 @@ const FormGuard = {
     return Promise.resolve(this.form);
   },
 
+  /**
+   * Renders Error Message if they are any.
+   * @return {undefined}
+   */
   renderErrors: function () {
-    let errorFragment = document.createDocumentFragment();
+    if ( formGuardErrorsEl && this._exists(this.errorMsgs) ) {
 
-    this._forEach(this.errorMsgs, function( errorMsg ) {
-      let errorNode = document.createElement("p");
+      let errorFragment = document.createDocumentFragment();
 
-      // Add error node to fragment
-      errorNode.innerHTML = errorMsg;
-      errorNode.style.color = 'crimson';
-      errorFragment.appendChild(errorNode);
-    });
+      this._forEach(this.errorMsgs, function( errorMsg ) {
+        let errorNode = document.createElement("p");
 
-    formGuardErrorsEl.innerHTML = '';
-    formGuardErrorsEl.appendChild(errorFragment);
+        // Add error node to fragment
+        errorNode.innerHTML = errorMsg;
+        errorNode.style.color = 'crimson';
+        errorFragment.appendChild(errorNode);
+      });
+
+      formGuardErrorsEl.innerHTML = '';
+      formGuardErrorsEl.appendChild(errorFragment);
+
+    }
+
+    if (formGuardErrorsEl && this.errorMsgs.length === 0) {
+      formGuardErrorsEl.innerHTML = '';
+    }
   },
+
+  isValid: function(){ return this.errorMsgs.length <= 0 },
 
   _forEach: function ( array, callback ) {
     for (var index = 0; index < array.length; index++) {
