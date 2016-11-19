@@ -51,6 +51,7 @@ const FormGuard = {
     // TODO: Get input name from label text
     // TODO: Seperate Error messages into a object
 
+    // Validates Field Value is required
     if (option.required) {
       if (!this._exists(input.value)) {
         this.errorMsgs.push(input.name + ' is required.');
@@ -61,12 +62,12 @@ const FormGuard = {
       this.validation.typeOf.bind(this)(input, option);
     }
 
-    // Minimum
+    // Minimum Length or Amount
     if ( option.minimum ) {
       this.validation.minimum.bind(this)(input, option)
     }
 
-    // Maximum Number amount
+    // Maximum Length or Amount
     if (option.maximum && (typeof(input.value) === 'number')) {
       this.validation.maximum.bind(this)(input, option)
     }
