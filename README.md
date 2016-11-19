@@ -2,6 +2,8 @@
 
 A Simple Form Validation Library that comes with it's own error messages.
 
+[Example](https://cyberstrike.github.io/FormGuardJS/)
+
 ## QuickStart
 
 ```html
