@@ -18,7 +18,10 @@ const FormGuard = {
   },
 
   register: function ( inputName, traits ) {
-    if ( exists(inputName) && exists(traits) ) {
+
+    // TODO: Handle unrecognised traits such as mispelled
+
+    if ( this._exists(inputName) && this._exists(traits) ) {
       this.registeredTraits.push(
         {
           name: inputName,
@@ -34,13 +37,13 @@ const FormGuard = {
     let valid = true;
 
     if (option.required) {
-      if (!exists(input.value)) {
+      if (!this._exists(input.value)) {
         valid = false;
         this.errorMsgs.push(input.name + ' is required.');
       }
     }
     // Validates typeof
-    if (option.type && exists(input.value) ) {
+    if (option.type && this._exists(input.value) ) {
       this.validation.typeOf.bind(this)(input, option);
     }
 
@@ -51,32 +54,31 @@ const FormGuard = {
 
     // Maximum Number amount
     if (option.maximum && (typeof(input.value) === 'number')) {
-
+      this.validation.maximum.bind(this)(input, option)
     }
 
     return valid;
   },
 
   validation: {
-    typeOf: ( input, option ) => {
-      console.log(this);
+     typeOf: function ( input, option )  {
       switch (option.type) {
         case 'number':
           if (!parseInt(input.value)) {
-            console.log('typeof: number')
             this.valid = false;
             this.errorMsgs.push(input.name + ' is not a ' + option.type + '.');
           }
           break;
         case 'email':
+          let msg = `${input.name} is not a valid e-mail address.`
+
           if ( typeof(input.value) === "string" ) {
             var emailRegEx = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
             if ( !emailRegEx.test( input.value ) ) {
               this._valid = false;
-              this.errorMsgs.push(input.name + ' is not a valid e-mail address.');
+              this.errorMsgs.push(msg);
             }
-
           }
           break;
         default:
@@ -86,7 +88,7 @@ const FormGuard = {
           }
       }
     },
-    minimum: ( input, option ) => {
+    minimum: function ( input, option ) {
       switch ( typeof(input.value) ) {
         case 'number':
           if ( input.value <= option.minimum ) {
@@ -101,7 +103,7 @@ const FormGuard = {
           }
       }
     },
-    maximum: ( input, option ) => {
+    maximum: function ( input, option ) {
       if (input.value <= option.minimum) {
         _valid = false;
         this.errorMsgs.push(input.name + 'must be less than ' + option.minimum);
@@ -110,27 +112,27 @@ const FormGuard = {
   },
 
   validate: function () {
+    this.errorMsgs = [];
     for ( let el of this.registeredTraits ) {
       let formEl = this.form[el.name];
       this.isInputValid(formEl, el.traits)
     }
 
-    if ( exists(this.errorMsgs) ) {
+    if ( this._exists(this.errorMsgs) ) {
       this.renderErrors();
       this.errorMsgs = [];
       return Promise.reject('false');
     }
 
     this.renderErrors();
-    this.errorMsgs = [];
     return Promise.resolve('true');
   },
 
   renderErrors: function () {
-    var errorFragment = document.createDocumentFragment();
+    let errorFragment = document.createDocumentFragment();
 
-    forEach(this.errorMsgs, function(errorMsg) {
-      var errorNode = document.createElement("p");
+    this._forEach(this.errorMsgs, function( errorMsg ) {
+      let errorNode = document.createElement("p");
 
       // Add error node to fragment
       errorNode.innerHTML = errorMsg;
@@ -140,21 +142,20 @@ const FormGuard = {
 
     formGuardErrorsEl.innerHTML = '';
     formGuardErrorsEl.appendChild(errorFragment);
+  },
+
+  _forEach: function ( array, callback ) {
+    for (var index = 0; index < array.length; index++) {
+      callback(array[index], index, array);
+    }
+  },
+
+  _exists: function ( thing ) {
+    if (typeof thing === "object"){
+      return Object.keys(thing).length > 0
+    }
+
+    return (typeof thing !== "undefined" && thing !== null && thing.length > 0);
   }
-}
 
-// Utilities
-
-function forEach(array, callback) {
-  for (var index = 0; index < array.length; index++) {
-    callback(array[index], index, array);
-  }
-}
-
-function exists(thing) {
-  if (typeof thing === "object"){
-    return Object.keys(thing).length > 0
-  }
-
-  return (typeof thing !== "undefined" && thing !== null && thing.length > 0);
 }

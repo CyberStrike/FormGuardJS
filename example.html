@@ -8,7 +8,7 @@
   <body>
     <h1>Login</h1>
     <div class="formGuardErrors"></div>
-    <form class='formguard' novalidate>
+    <form class='formguard'>
       <div>
         <label> E-mail
           <input type="text" name="email">
@@ -34,22 +34,38 @@
 
       var loginForm = document.querySelectorAll('form')[0];
 
-      function init() {
+      function init () {
 
-        window.formGuard = FormGuard.init(loginForm);
+        window.formGuard = FormGuard.init( loginForm );
 
-        formGuard.register('email', {
+        formGuard.register( 'email', {
           required: true,
           type: 'email'
         })
-        formGuard.register('password', {
+
+        formGuard.register( 'password', {
           required: true,
           type: 'string',
           minimum: 8
         })
 
-        loginForm.addEventListener('submit', loginFrmSbmtHndler);
+        loginForm.addEventListener( 'submit', loginFrmSbmtHndler);
 
+      }
+
+      function loginFrmSbmtHndler (event) {
+        event.preventDefault();
+        window
+          .formGuard.validate()
+            .then( function(){
+              console.log(
+                getLoginValues(loginForm),
+                document.getElementsByClassName("formGuardErrors")[0].innerHTML = "Submitted Form"
+              );
+            })
+            .catch(
+              (value)=> console.log(value)
+            )
       }
 
       // Login
@@ -61,20 +77,6 @@
           email: form.email ? form.email.value : '',
           password: form.password ? form.password.value : ''
         };
-      }
-
-      function loginFrmSbmtHndler(event) {
-        event.preventDefault();
-        window
-          .formGuard.validate()
-            .then( function(){
-              console.log(
-                getLoginValues(loginForm)
-              );
-            })
-            .catch(
-              (value)=> console.log(value)
-            )
       }
 
       // Run on Ready
