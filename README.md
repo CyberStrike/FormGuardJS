@@ -11,9 +11,11 @@ A Form Validation Library that comes with it's own error messages.
 <!-- Add A Container to show the errors -->
 
 <div class="formGuardErrors"></div>
-<form>
+<form onsubmit="return validateForm()">
   <div>
     <label> E-mail
+      <!-- Each input MUST have a “name” attribute -->
+
       <input type="text" name="email">
     </label>
   </div>
@@ -57,19 +59,29 @@ A Form Validation Library that comes with it's own error messages.
     })
 
     // On Form Submit call validate on formGuard
+
+    function validateForm () {
+       formGuard.validate()
+       return formGuard.isValid()
+    }
+
+    // Example using an event
+
+    // FormGuard.validate()
     // returns a promise with the form object as the first argument
     // so you can do whatever you need.
-    form.addEventListener( 'submit', function (event) {
-      event.preventDefault();
-      formGuard.validate()
-        .then( function (validForm) {
-          console.log(validForm)
-          document.getElementsByClassName("formGuardErrors")[0].innerHTML = "Submitted Form";
-        })
-        .catch(
-          (value)=> console.log(value)
-        )
-    });
+
+
+    // form.addEventListener( 'submit', function (event) {
+    //   event.preventDefault();
+    //   formGuard.validate()
+    //     .then( function (validForm) {
+    //       console.log(validForm)
+    //     })
+    //     .catch(
+    //       (value)=> console.log(value)
+    //     )
+    // });
 
 </script>
 ```

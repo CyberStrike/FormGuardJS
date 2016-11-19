@@ -8,35 +8,35 @@
   <body>
     <h1>Login</h1>
     <div class="formGuardErrors"></div>
-    <form>
-      <div>
+    <form onsubmit="return validateForm()">
+      <p>
         <label> E-mail
           <input type="text" name="email">
         </label>
-      </div>
-      <div>
+      </p>
+      <p>
         <label>  Password
-          <input type="text" name="password">
+          <input type="password" name="password">
         </label>
-      </div>
-      <div>
+      </p>
+      <p>
         <label>  Remember Me?
           <input type="checkbox" name="remember">
         </label>
-      </div>
-      <div>
+      </p>
+      <p>
         <button type="submit">Login</button>
-      </div>
+      </p>
     </form>
 
     <script src="./FormGuard.js" charset="utf-8"></script>
     <script type="text/javascript">
 
-      var form = document.querySelectorAll('form')[0];
+      const form = document.querySelectorAll('form')[0];
 
       // Initialize FormGuard and pass your form as an argument.
 
-      var formGuard = FormGuard.init( form );
+      const formGuard = FormGuard.init( form )
 
       // Register the inputs and traits you want to check for.
 
@@ -52,19 +52,15 @@
       })
 
       // On Form Submit call validate on formGuard
-      // returns a promise so you can do whatever you need.
-      form.addEventListener( 'submit', function (event) {
-        event.preventDefault();
-        formGuard.validate()
-          .then( function (validForm) {
-            console.log(validForm)
-            document.getElementsByClassName("formGuardErrors")[0].innerHTML = "Submitted Form";
-          })
-          .catch(
-            (value)=> console.log(value)
-          )
-      });
+      // returns a promise with the form object
+      // as the first argument so you can do whatever you need.
+
+      function validateForm () {
+         formGuard.validate()
+         return formGuard.isValid()
+      }
 
     </script>
+
   </body>
 </html>

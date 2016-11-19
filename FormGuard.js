@@ -33,7 +33,7 @@ const FormGuard = {
           traits: traits
         }
       );
-      return true
+      return this
     }
 
     throw 'Requires input name and traits to check.'
@@ -47,6 +47,9 @@ const FormGuard = {
    */
 
   isInputValid: function ( input, option ) {
+
+    // TODO: Get input name from label text
+    // TODO: Seperate Error messages into a object
 
     if (option.required) {
       if (!this._exists(input.value)) {
