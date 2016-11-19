@@ -1,6 +1,6 @@
 # FormGuardJS
 
-A Form Validation Library that comes with it's own error messages.
+A Simple Form Validation Library that comes with it's own error messages.
 
 ## QuickStart
 
