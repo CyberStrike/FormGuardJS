@@ -59,8 +59,8 @@
           .formGuard.validate()
             .then( function(){
               console.log(
-                getLoginValues(loginForm),
-                document.getElementsByClassName("formGuardErrors")[0].innerHTML = "Submitted Form"
+                getLoginValues(loginForm)
+                document.getElementsByClassName("formGuardErrors")[0].innerHTML = "Submitted Form";
               );
             })
             .catch(
