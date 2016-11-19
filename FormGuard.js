@@ -17,6 +17,13 @@ const FormGuard = {
     return this;
   },
 
+  /**
+   * Registers Input Traits to be checked by validate
+   * @param {String} inputName
+   * @param {Object} traits
+   * @return {Boolean} true
+   */
+
   register: function ( inputName, traits ) {
 
     // TODO: Handle unrecognised traits such as mispelled
@@ -30,8 +37,16 @@ const FormGuard = {
       );
       return true
     }
+
     throw 'Requires input name and traits to check.'
   },
+
+  /**
+   * Validates the input against registered traits.
+   * @param {input} input
+   * @param {traits} option
+   * @return {Boolean} true
+   */
 
   isInputValid: function ( input, option ) {
     let valid = true;
@@ -98,15 +113,24 @@ const FormGuard = {
           break;
         default:
           if ( input.value.length <= option.minimum ) {
-            FormGuard._valid = false;
-            FormGuard.errorMsgs.push(`${input.name} must be longer than ${option.minimum} characters.`);
+            this._valid = false;
+            this.errorMsgs.push(`${input.name} must be longer than ${option.minimum} characters.`);
           }
       }
     },
     maximum: function ( input, option ) {
-      if (input.value <= option.minimum) {
-        _valid = false;
-        this.errorMsgs.push(input.name + 'must be less than ' + option.minimum);
+      switch ( typeof(input.value) ) {
+        case 'number':
+          if ( input.value <= option.minimum ) {
+            this._valid = false;
+            this.errorMsgs.push(input.name + 'must be less than ' + option.minimum);
+          }
+          break;
+        default:
+          if ( input.value.length <= option.minimum ) {
+            this._valid = false;
+            this.errorMsgs.push(`${input.name} must be less than ${option.minimum} characters.`);
+          }
       }
     }
   },
@@ -120,11 +144,9 @@ const FormGuard = {
 
     if ( this._exists(this.errorMsgs) ) {
       this.renderErrors();
-      this.errorMsgs = [];
-      return Promise.reject('false');
+      return Promise.reject(this.errorMsgs);
     }
 
-    this.renderErrors();
     return Promise.resolve(this.form);
   },
 
