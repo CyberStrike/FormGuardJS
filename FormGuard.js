@@ -125,7 +125,7 @@ const FormGuard = {
     }
 
     this.renderErrors();
-    return Promise.resolve('true');
+    return Promise.resolve(this.form);
   },
 
   renderErrors: function () {

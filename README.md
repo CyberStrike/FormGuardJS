@@ -5,6 +5,11 @@ A Form Validation Library that comes with it's own error messages.
 ## QuickStart
 
 ```html
+
+<!-- Create a Form -->
+
+<!-- Add A Container to show the errors -->
+
 <div class="formGuardErrors"></div>
 <form>
   <div>
@@ -27,65 +32,44 @@ A Form Validation Library that comes with it's own error messages.
   </div>
 </form>
 
+<!-- Include FormGuard -->
 <script src="./FormGuard.js" charset="utf-8"></script>
+
 <script type="text/javascript">
 
-var loginForm = document.querySelectorAll('form')[0];
+    var form = document.querySelectorAll('form')[0];
 
-function init () {
+    // Initialize FormGuard and pass your form as an argument.
 
-  window.formGuard = FormGuard.init( loginForm );
+    var formGuard = FormGuard.init( form );
 
-  formGuard.register( 'email', {
-    required: true,
-    type: 'email'
-  })
+    // Register the inputs and traits you want to check for.
 
-  formGuard.register( 'password', {
-    required: true,
-    type: 'string',
-    minimum: 8
-  })
+    formGuard.register( 'email', {
+      required: true,
+      type: 'email'
+    })
 
-  loginForm.addEventListener( 'submit', loginFrmSbmtHndler);
+    formGuard.register( 'password', {
+      required: true,
+      type: 'string',
+      minimum: 8
+    })
 
-}
-
-function loginFrmSbmtHndler (event) {
-  event.preventDefault();
-  window
-    .formGuard.validate()
-      .then( function(){
-        console.log(
-          getLoginValues(loginForm)
+    // On Form Submit call validate on formGuard
+    // returns a promise with the form object as the first argument
+    // so you can do whatever you need.
+    form.addEventListener( 'submit', function (event) {
+      event.preventDefault();
+      formGuard.validate()
+        .then( function (validForm) {
+          console.log(validForm)
           document.getElementsByClassName("formGuardErrors")[0].innerHTML = "Submitted Form";
-        );
-      })
-          .catch(
-            (value)=> console.log(value)
-          )
-    }
+        })
+        .catch(
+          (value)=> console.log(value)
+        )
+    });
 
-    // Login
-
-    var loginBtn = document.getElementsByClassName('add')[0];
-
-    function getLoginValues(form) {
-      return {
-        email: form.email ? form.email.value : '',
-        password: form.password ? form.password.value : ''
-      };
-    }
-
-    // Run on Ready
-    function documentReady(fn) {
-      if (document.readyState != 'loading'){
-        fn();
-      } else {
-        document.addEventListener('DOMContentLoaded', fn);
-      }
-    }
-
-    documentReady(init());
-  </script>
+</script>
 ```
