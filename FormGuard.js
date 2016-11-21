@@ -71,6 +71,17 @@ const FormGuard = {
       this.validation.maximum.bind(this)(input, option)
     }
 
+    // Check that Input is Equal to Supplied Value
+
+    if (option.equals) {
+      this.validation.equals.bind(this)(input, option)
+    }
+
+    // Check if Two Input Values are Equal
+    if (option.isSameAs) {
+      this.validation.isSameAs.bind(this)(input, option)
+    }
+
   },
 
   /**
@@ -151,7 +162,22 @@ const FormGuard = {
             this.errorMsgs.push(`${input.name} must be less than ${option.minimum} characters.`);
           }
       }
-    }
+    },
+    equals: function (input, option) {
+      var msg = `${input.name} is not equal to ${option.equals}`
+
+      if ( !(input.value === option.equals) ) {
+        this.addErrorMsg(msg);
+      }
+    },
+    isSameAs: function (input, option) {
+      var msg = `${input.name} is not equal to ${option.isSameAs}`
+      console.log(input.value)
+      console.log(form[option.isSameAs].value)
+      if ( !(input.value === form[option.isSameAs].value) ) {
+        this.addErrorMsg(msg);
+      }
+    },
   },
 
   validate: function () {

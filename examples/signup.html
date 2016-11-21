@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>FormGuard</title>
+</head>
+  <body>
+    <h1>Sign Up</h1>
+    <div class="formGuardErrors"></div>
+    <form onsubmit="return validateForm()">
+      <p>
+        <label for="firstname">
+          First Name
+          <input type="text" name="firstname">
+        </label>
+      </p>
+      <p>
+        <label for="lastname">
+          Last Name
+          <input type="text" name="lastname">
+        </label>
+      </p>
+      <p>
+        <label> E-mail
+          <input type="text" name="email">
+        </label>
+      </p>
+      <p>
+        <label>  Password
+          <input type="password" name="password">
+        </label>
+      </p>
+      <p>
+        <label for="confirm"> Confirm
+          <input type="password" name="confirm">
+        </label>
+      </p>
+      <p>
+        <p>I have read and accepted the</p>
+        <label>
+          Terms Of Service
+          <input type="checkbox" name="tos">
+        </label>
+      </p>
+      <p>
+        <button type="submit">Login</button>
+      </p>
+    </form>
+
+    <script src="../FormGuard.js" charset="utf-8"></script>
+    <script type="text/javascript">
+
+      const form = document.querySelectorAll('form')[0];
+
+      // Initialize FormGuard and pass your form as an argument.
+
+      const formGuard = FormGuard.init( form )
+
+      // Register the inputs and traits you want to check for.
+
+      formGuard.register( 'firstname', {
+        required: true,
+        type: 'string',
+        minimum: 2
+      })
+
+      formGuard.register( 'lastname', {
+        required: true,
+        type: 'string',
+        minimum: 2
+      })
+
+      formGuard.register( 'email', {
+        required: true,
+        type: 'email'
+      })
+
+      formGuard.register( 'password', {
+        required: true,
+        type: 'alphanumeric',
+        minimum: 8
+      })
+
+      formGuard.register( 'confirm', {
+        required: true,
+        isSameAs: 'password'
+      })
+
+      formGuard.register( 'tos', {
+        required: true
+      })
+
+
+      // On Form Submit call validate on formGuard
+      // returns a promise with the form object
+      // as the first argument so you can do whatever you need.
+
+      function validateForm () {
+         formGuard.validate()
+         return formGuard.isValid()
+      }
+
+    </script>
+
+  </body>
+</html>
