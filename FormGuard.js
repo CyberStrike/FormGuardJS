@@ -49,7 +49,7 @@ const FormGuard = {
   isInputValid: function ( input, option ) {
 
     // TODO: Get input name from label text
-    // TODO: Seperate Error messages into a object
+    // TODO: Seperate Error messages into an object
 
     // Validates Field Value is required
     if (option.required) {
@@ -79,7 +79,7 @@ const FormGuard = {
    */
 
   validation: {
-     typeOf: function ( input, option )  {
+     typeOf: function ( input, option ) {
       switch (option.type) {
         case 'number':
           if (!parseInt(input.value)) {
@@ -111,7 +111,7 @@ const FormGuard = {
           }
           break;
         default:
-          if ( input.value.length <= option.minimum ) {
+          if ( input.value.length < option.minimum ) {
             this.errorMsgs.push(`${input.name} must be longer than ${option.minimum} characters.`);
           }
       }
