@@ -101,7 +101,7 @@ const FormGuard = {
           }
           break;
         case 'email':
-          let msg = `${input.name} is not a valid e-mail address.`
+          var msg = `${input.name} is not a valid e-mail address.`
 
           if ( typeof(input.value) === "string" ) {
             var emailRegEx = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
@@ -110,6 +110,15 @@ const FormGuard = {
               this.errorMsgs.push(msg);
             }
           }
+          break;
+        case 'alphanumeric':
+          var msg = `${input.name} must have only letters and numbers`
+          let alphanumeric = /^[a-zA-Z0-9_]*$/;
+
+          if ( !alphanumeric.test(input.value) ) {
+            this.addErrorMsg(msg);
+          }
+
           break;
         default:
           if ( typeof(input.value) != option.type ) {
