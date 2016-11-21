@@ -53,10 +53,9 @@ const FormGuard = {
 
     // Validates Field Value is required
     if (option.required) {
-      if (!this._exists(input.value)) {
-        this.errorMsgs.push(input.name + ' is required.');
-      }
+      this.validation.required.bind(this)(input, option);
     }
+
     // Validates typeof
     if (option.type && this._exists(input.value) ) {
       this.validation.typeOf.bind(this)(input, option);
@@ -79,7 +78,22 @@ const FormGuard = {
    */
 
   validation: {
-     typeOf: function ( input, option ) {
+    required: function ( input, option ) {
+      let msg = input.name + ' is required.'
+
+      switch (input.type) {
+        case 'checkbox':
+          if (!input.checked) {
+            this.errorMsgs.push(msg);
+          }
+          break;
+        default:
+          if (!this._exists(input.value)) {
+            this.errorMsgs.push(msg);
+          }
+      }
+    },
+    typeOf: function ( input, option ) {
       switch (option.type) {
         case 'number':
           if (!parseInt(input.value)) {
@@ -175,7 +189,11 @@ const FormGuard = {
     }
   },
 
-  isValid: function(){ return this.errorMsgs.length <= 0 },
+  isValid: function () { return this.errorMsgs.length <= 0 },
+
+  addErrorMsg: function ( msg ) {
+    this.errorMsgs.push(msg);
+  },
 
   _forEach: function ( array, callback ) {
     for (var index = 0; index < array.length; index++) {
