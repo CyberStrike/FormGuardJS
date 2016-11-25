@@ -4,27 +4,66 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>FormGuard</title>
+    <script src="../FormGuard.js" charset="utf-8"></script>
+
+    <style media="screen">
+      .hasError {
+        border-color: crimson;
+      }
+    </style>
   </head>
   <body>
     <h1>Login</h1>
     <a href="./examples/signup.html">Sign Up</a> example.
     <div class="formGuardErrors"></div>
     <form onsubmit="return validateForm()">
+      <script type="text/javascript">
+
+        const form = document.querySelectorAll('form')[0];
+        const formGuard = FormGuard.init( form )
+
+        function validateForm () {
+           formGuard.validate()
+           return formGuard.isValid()
+        }
+
+      </script>
+      <h3>Type Of</h3>
       <fieldset>
-        <legend>TypeOf:</legend>
         <p>
           <label for="number">
             Number
             <input type="text" name="number" value="One">
           </label>
+          <script type="text/javascript">
+            formGuard.register( 'number', {
+              type: 'number'
+            })
+          </script>
+        </p>
+        <p>
+          <label> E-Mail
+            <input type="text" name="email" value="FormGuard">
+          </label>
+          <script type="text/javascript">
+            formGuard.register( 'email', {
+              type: 'email'
+            })
+          </script>
+        </p>
+        <p>
+          <label> Alpha Numeric
+            <input type="text" name="alphanumeric" value="!@#$%^*()">
+          </label>
+          <script type="text/javascript">
+            formGuard.register( 'alphanumeric', {
+              type: 'alphanumeric',
+              required: true
+            })
+          </script>
         </p>
       </fieldset>
 
-      <p>
-        <label> E-mail
-          <input type="text" name="email">
-        </label>
-      </p>
       <p>
         <label>  Password
           <input type="password" name="password">
@@ -40,48 +79,7 @@
       </p>
     </form>
 
-    <script src="../FormGuard.js" charset="utf-8"></script>
-    <script type="text/javascript">
 
-      const form = document.querySelectorAll('form')[0];
-
-      // Initialize FormGuard and pass your form as an argument.
-
-      const formGuard = FormGuard.init( form )
-
-      // typeof
-
-      formGuard.register( 'number', {
-        type: 'number'
-      })
-
-
-      formGuard.register( 'email', {
-        required: true,
-        type: 'string'
-      })
-
-      formGuard.register( 'password', {
-        required: true,
-        type: 'string',
-        minimum: 8
-      })
-
-      // On Form Submit call validate on formGuard
-      // returns a promise with the form object
-      // as the first argument so you can do whatever you need.
-
-      function validateForm () {
-         formGuard.validate()
-         return formGuard.isValid()
-      }
-
-    </script>
-    <style media="screen">
-      .hasError {
-        border-color: crimson;
-      }
-    </style>
 
   </body>
 </html>
