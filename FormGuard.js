@@ -8,10 +8,10 @@ const FormGuard = {
 
   errorMsgs: [],
 
-  init: function ( el ) {
+  init: function ( formEl ) {
     // Set Errors Container
     window.formGuardErrorsEl = document.getElementsByClassName("formGuardErrors")[0];
-    this.form = el;
+    this.form = form;
     return this;
   },
 
@@ -50,8 +50,11 @@ const FormGuard = {
 
     // TODO: Get input name from label text
     // TODO: Seperate Error messages into an object
+    // TODO: Make validations more pure and only return Booleans
+    //       and make isInputValid the error emitter. This will
+    //       will allow us to use our own validators
 
-    // Validates Field Value is required
+    // Validates Field  is required
     if (option.required) {
       this.validation.required.bind(this)(input, option);
     }
@@ -71,13 +74,12 @@ const FormGuard = {
       this.validation.maximum.bind(this)(input, option)
     }
 
-    // Check that Input is Equal to Supplied Value
-
+    // Check that Field Value is Equal to Supplied Value
     if (option.equals) {
       this.validation.equals.bind(this)(input, option)
     }
 
-    // Check if Two Input Values are Equal
+    // Check if Two Field Values are Equal
     if (option.isSameAs) {
       this.validation.isSameAs.bind(this)(input, option)
     }
@@ -90,35 +92,39 @@ const FormGuard = {
 
   validation: {
     required: function ( input, option ) {
-      let msg = input.name + ' is required.'
+      var msg = input.name + ' is required.'
 
       switch (input.type) {
         case 'checkbox':
           if (!input.checked) {
-            this.errorMsgs.push(msg);
+            this.addErrorMsg( input, msg );
           }
           break;
         default:
           if (!this._exists(input.value)) {
-            this.errorMsgs.push(msg);
+            this.addErrorMsg( input, msg );
           }
       }
     },
-    typeOf: function ( input, option ) {
+    typeOf:   function ( input, option ) {
       switch (option.type) {
         case 'number':
-          if (!parseInt(input.value)) {
-            this.errorMsgs.push(input.name + ' is not a ' + option.type + '.');
+          var msg = input.name + ' is not a ' + option.type + '.'
+          var valueType = parseInt(input.value)
+
+          if ( isNaN(valueType) ) {
+            this.addErrorMsg( input, msg );
           }
+
           break;
         case 'email':
           var msg = `${input.name} is not a valid e-mail address.`
 
           if ( typeof(input.value) === "string" ) {
-            var emailRegEx = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+            let emailRegEx = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
             if ( !emailRegEx.test( input.value ) ) {
-              this.errorMsgs.push(msg);
+              this.addErrorMsg( input, msg );
             }
           }
           break;
@@ -127,7 +133,7 @@ const FormGuard = {
           let alphanumeric = /^[a-zA-Z0-9_]*$/;
 
           if ( !alphanumeric.test(input.value) ) {
-            this.addErrorMsg(msg);
+            this.addErrorMsg( input, msg );
           }
 
           break;
@@ -137,10 +143,11 @@ const FormGuard = {
           }
       }
     },
-    minimum: function ( input, option ) {
+    minimum:  function ( input, option ) {
       switch ( typeof(input.value) ) {
         case 'number':
           if ( input.value <= option.minimum ) {
+            msg =
             this.errorMsgs.push(input.name + 'must be greater than ' + option.minimum);
           }
           break;
@@ -150,7 +157,7 @@ const FormGuard = {
           }
       }
     },
-    maximum: function ( input, option ) {
+    maximum:  function ( input, option ) {
       switch ( typeof(input.value) ) {
         case 'number':
           if ( input.value <= option.minimum ) {
@@ -163,17 +170,16 @@ const FormGuard = {
           }
       }
     },
-    equals: function (input, option) {
+    equals:   function ( input, option ) {
       var msg = `${input.name} is not equal to ${option.equals}`
 
       if ( !(input.value === option.equals) ) {
         this.addErrorMsg(msg);
       }
     },
-    isSameAs: function (input, option) {
+    isSameAs: function ( input, option ) {
       var msg = `${input.name} is not equal to ${option.isSameAs}`
-      console.log(input.value)
-      console.log(form[option.isSameAs].value)
+
       if ( !(input.value === form[option.isSameAs].value) ) {
         this.addErrorMsg(msg);
       }
@@ -184,8 +190,8 @@ const FormGuard = {
     this.errorMsgs = [];
 
     for ( let el of this.registeredTraits ) {
-      let formEl = this.form[el.name];
-      this.isInputValid(formEl, el.traits)
+      let field = this.form[el.name];
+      this.isInputValid(field, el.traits)
     }
 
     if ( !this.isValid() ) {
@@ -201,33 +207,52 @@ const FormGuard = {
    * @return {undefined}
    */
   renderErrors: function () {
-    if ( formGuardErrorsEl && this._exists(this.errorMsgs) ) {
 
-      let errorFragment = document.createDocumentFragment();
+    // Remove Error Messages
+    this._removeFgErrorMsgs()
 
-      this._forEach(this.errorMsgs, function( errorMsg ) {
-        let errorNode = document.createElement("p");
+    this._forEach(this.errorMsgs, function ( error ) {
+
+      let errorNode = document.createElement("p");
+
+      if ( typeof(error) === "object" ) {
+        let inputContainer = error.input.parentElement.parentElement
+        error.input.classList.add('hasError');
+
+        // Add error node to GrandParent
+        errorNode.innerHTML = error.msg;
+        errorNode.classList.add('fgErrorMsg');
+        errorNode.style.color = 'crimson';
+
+        inputContainer.insertBefore(
+          errorNode, inputContainer.firstChild
+        );
+      }
+
+      if ( formGuardErrorsEl && typeof(error) !== "object" ) {
+
+        let errorFragment = document.createDocumentFragment();
 
         // Add error node to fragment
-        errorNode.innerHTML = errorMsg;
+        errorNode.innerHTML = error;
         errorNode.style.color = 'crimson';
         errorFragment.appendChild(errorNode);
-      });
 
-      formGuardErrorsEl.innerHTML = '';
-      formGuardErrorsEl.appendChild(errorFragment);
+        formGuardErrorsEl.appendChild(errorFragment);
 
-    }
+      }
 
-    if (formGuardErrorsEl && this.errorMsgs.length === 0) {
-      formGuardErrorsEl.innerHTML = '';
-    }
+    })
+
   },
 
   isValid: function () { return this.errorMsgs.length <= 0 },
 
-  addErrorMsg: function ( msg ) {
-    this.errorMsgs.push(msg);
+  addErrorMsg: function ( input, msg ) {
+    this.errorMsgs.push({
+      input: input,
+      msg: msg
+    });
   },
 
   _forEach: function ( array, callback ) {
@@ -242,6 +267,20 @@ const FormGuard = {
     }
 
     return (typeof thing !== "undefined" && thing !== null && thing.length > 0);
+  },
+
+  _removeFgErrorMsgs: function () {
+    let fgErrorMsgs = document.querySelectorAll('.fgErrorMsg')
+
+    if ( this._exists(fgErrorMsgs) ) {
+      this._forEach( fgErrorMsgs, ( errorMsgEl ) => {
+        errorMsgEl.parentElement.removeChild(errorMsgEl)
+      })
+    }
+
+    if ( formGuardErrorsEl ) {
+      formGuardErrorsEl.innerHTML = '';
+    }
   }
 
 }

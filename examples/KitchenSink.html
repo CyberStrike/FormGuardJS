@@ -1,15 +1,25 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
-  <title>FormGuard</title>
-</head>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>FormGuard</title>
+  </head>
   <body>
     <h1>Login</h1>
     <a href="./examples/signup.html">Sign Up</a> example.
     <div class="formGuardErrors"></div>
     <form onsubmit="return validateForm()">
+      <fieldset>
+        <legend>TypeOf:</legend>
+        <p>
+          <label for="number">
+            Number
+            <input type="text" name="number" value="One">
+          </label>
+        </p>
+      </fieldset>
+
       <p>
         <label> E-mail
           <input type="text" name="email">
@@ -30,7 +40,7 @@
       </p>
     </form>
 
-    <script src="./FormGuard.js" charset="utf-8"></script>
+    <script src="../FormGuard.js" charset="utf-8"></script>
     <script type="text/javascript">
 
       const form = document.querySelectorAll('form')[0];
@@ -39,7 +49,12 @@
 
       const formGuard = FormGuard.init( form )
 
-      // Register the inputs and traits you want to check for.
+      // typeof
+
+      formGuard.register( 'number', {
+        type: 'number'
+      })
+
 
       formGuard.register( 'email', {
         required: true,
