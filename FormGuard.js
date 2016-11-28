@@ -70,7 +70,7 @@ const FormGuard = {
     }
 
     // Maximum Length or Amount
-    if (option.maximum && (typeof(input.value) === 'number')) {
+    if ( option.maximum ) {
       this.validation.maximum.bind(this)(input, option)
     }
 
@@ -107,17 +107,17 @@ const FormGuard = {
       }
     },
     typeOf:   function ( input, option ) {
-      switch (option.type) {
-        case 'number':
-          var msg = input.name + ' is not a ' + option.type + '.'
-          var valueType = parseInt(input.value)
+      switch ( option.type ) {
+        case 'number' :
+          var msg = `${input.name} is not a ${option.type}.`
+          var getNumber = parseInt(input.value)
 
-          if ( isNaN(valueType) ) {
+          if ( isNaN(getNumber) ) {
             this.addErrorMsg( input, msg );
           }
 
           break;
-        case 'email':
+        case 'email' :
           var msg = `${input.name} is not a valid e-mail address.`
 
           if ( typeof(input.value) === "string" ) {
@@ -138,35 +138,44 @@ const FormGuard = {
 
           break;
         default:
+          var msg = `${input.name} is not a ${option.type}.`
+
           if ( typeof(input.value) != option.type ) {
-            this.errorMsgs.push(input.name + ' is not a ' + option.type + '.');
+            this.addErrorMsg( input, msg );
           }
       }
     },
     minimum:  function ( input, option ) {
-      switch ( typeof(input.value) ) {
-        case 'number':
-          if ( input.value <= option.minimum ) {
-            msg =
-            this.errorMsgs.push(input.name + 'must be greater than ' + option.minimum);
+      switch ( input.type ) {
+        case "number":
+          var msg = `${ input.name } must be greater than ${ option.minimum }.`
+
+          if ( parseInt(input.value) <= option.minimum ) {
+            this.addErrorMsg( input, msg );
           }
           break;
         default:
+          var msg = `${input.name} must be longer than ${option.minimum} characters.`
+
           if ( input.value.length < option.minimum ) {
-            this.errorMsgs.push(`${input.name} must be longer than ${option.minimum} characters.`);
+            this.addErrorMsg( input, msg );
           }
       }
     },
     maximum:  function ( input, option ) {
-      switch ( typeof(input.value) ) {
+      switch ( input.type ) {
         case 'number':
-          if ( input.value <= option.minimum ) {
-            this.errorMsgs.push(input.name + 'must be less than ' + option.minimum);
+          var msg = `${input.name } must not be more than ${option.maximum}`
+
+          if ( parseInt(input.value) > option.maximum ) {
+            this.addErrorMsg( input, msg );
           }
           break;
         default:
-          if ( input.value.length <= option.minimum ) {
-            this.errorMsgs.push(`${input.name} must be less than ${option.minimum} characters.`);
+          var msg = `${input.name} must not be longer than ${option.maximum} characters.`
+
+          if ( input.value.length > option.maximum ) {
+            this.addErrorMsg( input, msg );
           }
       }
     },
@@ -216,8 +225,11 @@ const FormGuard = {
       let errorNode = document.createElement("p");
 
       if ( typeof(error) === "object" ) {
-        let inputContainer = error.input.parentElement.parentElement
-        error.input.classList.add('hasError');
+        let inputContainer = error.input.parentElement
+
+        // Add Classes
+        error.input.parentElement.classList.add('has-error');
+        error.input.classList.add('has-error')
 
         // Add error node to GrandParent
         errorNode.innerHTML = error.msg;
@@ -225,8 +237,9 @@ const FormGuard = {
         errorNode.style.color = 'crimson';
 
         inputContainer.insertBefore(
-          errorNode, inputContainer.firstChild
+          errorNode, error.input
         );
+
       }
 
       if ( formGuardErrorsEl && typeof(error) !== "object" ) {

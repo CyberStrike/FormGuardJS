@@ -4,82 +4,165 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>FormGuard</title>
+    <link rel="stylesheet" crossorigin="anonymous"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u">
+    <link rel="stylesheet" href="./css/styles.css">
     <script src="../FormGuard.js" charset="utf-8"></script>
-
-    <style media="screen">
-      .hasError {
-        border-color: crimson;
-      }
-    </style>
   </head>
   <body>
-    <h1>Login</h1>
-    <a href="./examples/signup.html">Sign Up</a> example.
-    <div class="formGuardErrors"></div>
-    <form onsubmit="return validateForm()">
-      <script type="text/javascript">
+    <div class="container">
+      <h1>Kitchen Sink</h1>
+      <p>A collection of all the validations for FormGuard.</p>
+      <a href="./examples/signup.html">Sign Up</a> example.
+      <div class="formGuardErrors"></div>
+      <form onsubmit="return validateForm()">
+        <script type="text/javascript">
 
-        const form = document.querySelectorAll('form')[0];
-        const formGuard = FormGuard.init( form )
+          const form = document.querySelectorAll('form')[0];
+          const formGuard = FormGuard.init( form )
 
-        function validateForm () {
-           formGuard.validate()
-           return formGuard.isValid()
-        }
+          function validateForm () {
+             formGuard.validate()
+             return formGuard.isValid()
+          }
 
-      </script>
-      <h3>Type Of</h3>
-      <fieldset>
+        </script>
+
+        <div class="fieldGroup">
+          <h3>Required</h3>
+          <div class="group">
+            <p>
+              <label for="required">
+                Required
+                <input type="text" name="required" value="">
+                <script type="text/javascript">
+                  formGuard.register( 'required', {
+                    required: true
+                  })
+                </script>
+              </label>
+            </p>
+          </div>
+        </div>
+        <div class="fieldGroup">
+          <h3>Type Of</h3>
+          <div class="group">
+            <p>
+              <div class="form-group">
+                <label class="control-label" for="number">
+                  Number
+                </label>
+                <input class="form-control" type="text" name="number" value="One">
+                <span id="helpBlock" class="help-block">
+                  Validates that this input only contains numbers.
+                </span>
+              </div>
+              <script type="text/javascript">
+                formGuard.register( 'number', {
+                  type: 'number'
+                })
+              </script>
+            </p>
+            <p>
+              <label> E-Mail
+                <input type="text" name="email" value="FormGuard">
+              </label>
+              <script type="text/javascript">
+                formGuard.register( 'email', {
+                  type: 'email'
+                })
+              </script>
+            </p>
+            <p>
+              <label> Alpha Numeric
+                <input type="text" name="alphanumeric" value="!@#$%^*()">
+              </label>
+              <script type="text/javascript">
+                formGuard.register( 'alphanumeric', {
+                  type: 'alphanumeric',
+                  required: true
+                })
+              </script>
+            </p>
+          </div>
+        </div>
+        <div class="fieldGroup">
+          <h3>Minimum</h3>
+          <div class="group">
+            <p>
+              <label> Minimum Number
+                <input type="number" name="minNumber" value="1000">
+              </label>
+              <script type="text/javascript">
+                formGuard.register( 'minNumber', {
+                  minimum: 9999,
+                  required: true
+                })
+              </script>
+            </p>
+            <p>
+              <label> Minimum Length
+                <input type="text" name="minLength" value="123456789">
+              </label>
+              <script type="text/javascript">
+                formGuard.register( 'minLength', {
+                  minimum: 10,
+                  required: true
+                })
+              </script>
+            </p>
+          </div>
+        </div>
+        <div class="fieldGroup">
+          <h3>Maximum</h3>
+          <div class="group">
+            <p>
+              <label> Maximum Number
+                <input type="number" name="maxNumber" value="1000">
+              </label>
+              <script type="text/javascript">
+                formGuard.register( 'maxNumber', {
+                  maximum: 900,
+                  required: true
+                })
+              </script>
+            </p>
+            <p>
+              <label> Maximum Length
+                <input type="text" name="maxLength" value="1234567890">
+              </label>
+              <script type="text/javascript">
+                formGuard.register( 'maxLength', {
+                  maximum: 9,
+                  required: true
+                })
+              </script>
+            </p>
+          </div>
+        </div>
+
         <p>
-          <label for="number">
-            Number
-            <input type="text" name="number" value="One">
+          <label>  Password
+            <input type="password" name="password">
+            <script type="text/javascript">
+              formGuard.register( 'password', {
+                type: 'alphanumeric',
+                minimum: 8,
+                required: true
+              })
+            </script>
           </label>
-          <script type="text/javascript">
-            formGuard.register( 'number', {
-              type: 'number'
-            })
-          </script>
         </p>
         <p>
-          <label> E-Mail
-            <input type="text" name="email" value="FormGuard">
+          <label>  Remember Me?
+            <input type="checkbox" name="remember">
           </label>
-          <script type="text/javascript">
-            formGuard.register( 'email', {
-              type: 'email'
-            })
-          </script>
         </p>
         <p>
-          <label> Alpha Numeric
-            <input type="text" name="alphanumeric" value="!@#$%^*()">
-          </label>
-          <script type="text/javascript">
-            formGuard.register( 'alphanumeric', {
-              type: 'alphanumeric',
-              required: true
-            })
-          </script>
+          <button type="submit">Login</button>
         </p>
-      </fieldset>
-
-      <p>
-        <label>  Password
-          <input type="password" name="password">
-        </label>
-      </p>
-      <p>
-        <label>  Remember Me?
-          <input type="checkbox" name="remember">
-        </label>
-      </p>
-      <p>
-        <button type="submit">Login</button>
-      </p>
-    </form>
-
-
-
+      </form>
+    </div>
   </body>
 </html>
