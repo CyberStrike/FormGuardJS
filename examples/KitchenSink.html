@@ -16,17 +16,20 @@
       <p>A collection of all the validations for FormGuard.</p>
       <a href="./examples/signup.html">Sign Up</a> example.
       <div class="formGuardErrors"></div>
-      <form onsubmit="return validateForm()">
+      <form>
         <script type="text/javascript">
-
-          const form = document.querySelectorAll('form')[0];
+          const form = document.querySelectorAll('form')[0]
           const formGuard = FormGuard.init( form )
 
-          function validateForm () {
-             formGuard.validate()
-             return formGuard.isValid()
-          }
+          form.addEventListener('submit', function(evt){
+            formGuard.validate()
+              .then( () => submitForm() )
+              .catch( (errors) => evt.preventDefault() )
+          });
 
+          function submitForm () {
+            alert("submitted")
+          }
         </script>
 
         <div class="fieldGroup">

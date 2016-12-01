@@ -8,7 +8,7 @@ const FormGuard = {
 
   errorMsgs: [],
 
-  init: function ( formEl ) {
+  init: function ( form ) {
     // Set Errors Container
     window.formGuardErrorsEl = document.getElementsByClassName("formGuardErrors")[0];
     this.form = form;
@@ -25,6 +25,22 @@ const FormGuard = {
   register: function ( inputName, traits ) {
 
     // TODO: Handle unrecognised traits such as mispelled
+
+    // Something like this maybe, the one issue is that the options are
+    // not necessarily the same name as the validator name. For example type uses typeOf.
+    // I don't want to create just an array of options and have to update it
+    // everytime we add a new one.
+
+    // function checkTraits (traits, validators) {
+    //   let arrayOfPossibleOptions
+    //   let arrayOfPassedTraitOptions
+    //
+    //   BadOption = arrayOfPossibleOptions !== arrayOfPassedTraitOptions
+    //
+    //   if ( Bad Option) {
+    //     throw A Message with the invalid option
+    //   }
+    // }
 
     if ( this._exists(inputName) && this._exists(traits) ) {
       this.registeredTraits.push(
@@ -88,6 +104,9 @@ const FormGuard = {
 
   /**
    * A collection of validation functions
+   * @param {input} input
+   * @param {traits} option
+   * @return {undefined} undefined
    */
 
   validation: {
@@ -221,6 +240,7 @@ const FormGuard = {
     this._removeFgErrorMsgs()
 
     this._forEach(this.errorMsgs, function ( error ) {
+      // TODO: Extract the if statements into their own functions
 
       let errorNode = document.createElement("p");
 
