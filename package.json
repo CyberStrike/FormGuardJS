@@ -18,5 +18,11 @@
   "bugs": {
     "url": "https://github.com/CyberStrike/FormGuardJS/issues"
   },
-  "homepage": "https://github.com/CyberStrike/FormGuardJS#readme"
+  "homepage": "https://github.com/CyberStrike/FormGuardJS#readme",
+  "devDependencies": {
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.4.0",
+    "eslint-plugin-standard": "^2.0.1",
+    "standard": "^8.6.0"
+  }
 }
