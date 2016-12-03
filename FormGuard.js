@@ -10,7 +10,7 @@ const FormGuard = {
 
   init: function ( form ) {
     // Set Errors Container
-    window.formGuardErrorsEl = document.getElementsByClassName("formGuardErrors")[0];
+    window.formGrdErrEl = document.getElementsByClassName("formGuardErrors")[0];
     this.form = form;
     return this;
   },
@@ -28,7 +28,7 @@ const FormGuard = {
 
     // Something like this maybe, the one issue is that the options are
     // not necessarily the same name as the validator name. For example type uses typeOf.
-    // I don't want to create just an array of options and have to update it
+    // I don't want to create an array of options and have to update it
     // everytime we add a new one.
 
     // function checkTraits (traits, validators) {
@@ -72,32 +72,32 @@ const FormGuard = {
 
     // Validates Field  is required
     if (option.required) {
-      this.validation.required.bind(this)(input, option);
+      this.validation.required.call(this, input, option);
     }
 
     // Validates typeof
     if (option.type && this._exists(input.value) ) {
-      this.validation.typeOf.bind(this)(input, option);
+      this.validation.typeOf.call(this, input, option);
     }
 
     // Minimum Length or Amount
     if ( option.minimum ) {
-      this.validation.minimum.bind(this)(input, option)
+      this.validation.minimum.call(this, input, option);
     }
 
     // Maximum Length or Amount
     if ( option.maximum ) {
-      this.validation.maximum.bind(this)(input, option)
+      this.validation.maximum.call(this, input, option);
     }
 
     // Check that Field Value is Equal to Supplied Value
     if (option.equals) {
-      this.validation.equals.bind(this)(input, option)
+      this.validation.equals.call(this, input, option);
     }
 
     // Check if Two Field Values are Equal
     if (option.isSameAs) {
-      this.validation.isSameAs.bind(this)(input, option)
+      this.validation.isSameAs.call(this, input, option);
     }
 
   },
@@ -202,14 +202,14 @@ const FormGuard = {
       var msg = `${input.name} is not equal to ${option.equals}`
 
       if ( !(input.value === option.equals) ) {
-        this.addErrorMsg(msg);
+        this.addErrorMsg(input, msg);
       }
     },
     isSameAs: function ( input, option ) {
       var msg = `${input.name} is not equal to ${option.isSameAs}`
 
       if ( !(input.value === form[option.isSameAs].value) ) {
-        this.addErrorMsg(msg);
+        this.addErrorMsg(input, msg);
       }
     },
   },
@@ -262,7 +262,7 @@ const FormGuard = {
 
       }
 
-      if ( formGuardErrorsEl && typeof(error) !== "object" ) {
+      if ( formGrdErrEl && typeof(error) !== "object" ) {
 
         let errorFragment = document.createDocumentFragment();
 
@@ -271,7 +271,7 @@ const FormGuard = {
         errorNode.style.color = 'crimson';
         errorFragment.appendChild(errorNode);
 
-        formGuardErrorsEl.appendChild(errorFragment);
+        formGrdErrEl.appendChild(errorFragment);
 
       }
 
@@ -311,8 +311,8 @@ const FormGuard = {
       })
     }
 
-    if ( formGuardErrorsEl ) {
-      formGuardErrorsEl.innerHTML = '';
+    if ( formGrdErrEl ) {
+      formGrdErrEl.innerHTML = '';
     }
   }
 

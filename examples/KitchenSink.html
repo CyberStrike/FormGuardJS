@@ -144,6 +144,49 @@
             </p>
           </div>
         </div>
+        <div class="fieldGroup">
+          <h3>Equality</h3>
+          <div class="group">
+            <p>
+              <div class="form-group">
+                <label class="control-label" for="equal">
+                  Equal
+                </label>
+                <input class="form-control" type="text" name="equal" value="not equal">
+                <span id="helpBlock" class="help-block">
+                  Validates that this input is equal to a value.
+                </span>
+              </div>
+              <script type="text/javascript">
+                formGuard.register( 'equal', {
+                  equals: 'equal'
+                })
+              </script>
+            </p>
+            <p>
+              <div class="form-group">
+                <label class="control-label" for="equal">
+                  Equal Value Example
+                </label>
+                <input class="form-control" type="text" name="isSame1" value="equal" disabled>
+              </div>
+              <div class="form-group">
+                <label class="control-label" for="equal">
+                  Equal Value Example
+                </label>
+                <input class="form-control" type="text" name="isSame2" value="not equal">
+                <span id="helpBlock" class="help-block">
+                  Validates that an inputs value is equal to another inputs value
+                </span>
+              </div>
+              <script type="text/javascript">
+                formGuard.register( 'isSame2', {
+                  isSameAs: 'isSame1'
+                })
+              </script>
+            </p>
+          </div>
+        </div>
 
         <p>
           <label>  Password
