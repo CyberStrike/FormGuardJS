@@ -8,11 +8,11 @@ const FormGuard = {
 
   errorMsgs: [],
 
-  init: function ( form ) {
+  init: function (form) {
     // Set Errors Container
-    window.formGrdErrEl = document.getElementsByClassName("formGuardErrors")[0];
-    this.form = form;
-    return this;
+    window.formGrdErrEl = document.getElementsByClassName('formGuardErrors')[0]
+    this.form = form
+    return this
   },
 
   /**
@@ -22,8 +22,7 @@ const FormGuard = {
    * @return {Boolean} true
    */
 
-  register: function ( inputName, traits ) {
-
+  register: function (inputName, traits) {
     // TODO: Handle unrecognised traits such as mispelled
 
     // Something like this maybe, the one issue is that the options are
@@ -42,17 +41,22 @@ const FormGuard = {
     //   }
     // }
 
-    if ( this._exists(inputName) && this._exists(traits) ) {
+    if (this._exists(inputName) && this._exists(traits)) {
       this.registeredTraits.push(
         {
           name: inputName,
           traits: traits
         }
-      );
+      )
       return this
     }
 
-    throw 'Requires input name and traits to check.'
+    let ArgumentError = {
+      name: 'ArgumentError',
+      message: 'Requires input name and traits to check.'
+    }
+
+    throw ArgumentError
   },
 
   /**
@@ -62,8 +66,7 @@ const FormGuard = {
    * @return {Boolean} true
    */
 
-  isInputValid: function ( input, option ) {
-
+  isInputValid: function (input, option) {
     // TODO: Get input name from label text
     // TODO: Seperate Error messages into an object
     // TODO: Make validations more pure and only return Booleans
@@ -72,34 +75,33 @@ const FormGuard = {
 
     // Validates Field  is required
     if (option.required) {
-      this.validation.required.call(this, input, option);
+      this.validation.required.call(this, input, option)
     }
 
     // Validates typeof
-    if (option.type && this._exists(input.value) ) {
-      this.validation.typeOf.call(this, input, option);
+    if (option.type && this._exists(input.value)) {
+      this.validation.typeOf.call(this, input, option)
     }
 
     // Minimum Length or Amount
-    if ( option.minimum ) {
-      this.validation.minimum.call(this, input, option);
+    if (option.minimum) {
+      this.validation.minimum.call(this, input, option)
     }
 
     // Maximum Length or Amount
-    if ( option.maximum ) {
-      this.validation.maximum.call(this, input, option);
+    if (option.maximum) {
+      this.validation.maximum.call(this, input, option)
     }
 
     // Check that Field Value is Equal to Supplied Value
     if (option.equals) {
-      this.validation.equals.call(this, input, option);
+      this.validation.equals.call(this, input, option)
     }
 
     // Check if Two Field Values are Equal
     if (option.isSameAs) {
-      this.validation.isSameAs.call(this, input, option);
+      this.validation.isSameAs.call(this, input, option)
     }
-
   },
 
   /**
@@ -110,124 +112,127 @@ const FormGuard = {
    */
 
   validation: {
-    required: function ( input, option ) {
-      var msg = input.name + ' is required.'
+    required: function (input, option) {
+      let msg = input.name + ' is required.'
 
       switch (input.type) {
         case 'checkbox':
           if (!input.checked) {
-            this.addErrorMsg( input, msg );
+            this.addErrorMsg(input, msg)
           }
-          break;
+          break
         default:
           if (!this._exists(input.value)) {
-            this.addErrorMsg( input, msg );
+            this.addErrorMsg(input, msg)
           }
       }
     },
-    typeOf:   function ( input, option ) {
-      switch ( option.type ) {
+    typeOf:   function (input, option) {
+      switch (option.type) {
         case 'number' :
-          var msg = `${input.name} is not a ${option.type}.`
-          var getNumber = parseInt(input.value)
+          let numberMsg = `${input.name} is not a ${option.type}.`
+          let getNumber = parseInt(input.value)
 
-          if ( isNaN(getNumber) ) {
-            this.addErrorMsg( input, msg );
+          if (isNaN(getNumber)) {
+            this.addErrorMsg(input, numberMsg)
           }
 
-          break;
+          break
         case 'email' :
-          var msg = `${input.name} is not a valid e-mail address.`
+          let emailMsg = `${input.name} is not a valid e-mail address.`
 
-          if ( typeof(input.value) === "string" ) {
-            let emailRegEx = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+          if (typeof (input.value) === 'string') {
+            let emailRegEx = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
-            if ( !emailRegEx.test( input.value ) ) {
-              this.addErrorMsg( input, msg );
+            if (!emailRegEx.test(input.value)) {
+              this.addErrorMsg(input, emailMsg)
             }
           }
-          break;
+
+          break
         case 'alphanumeric':
-          var msg = `${input.name} must have only letters and numbers`
-          let alphanumeric = /^[a-zA-Z0-9_]*$/;
+          let alphanumericMsg = `${input.name} must have only letters and numbers`
+          let alphanumeric = /^[a-zA-Z0-9_]*$/
 
-          if ( !alphanumeric.test(input.value) ) {
-            this.addErrorMsg( input, msg );
+          if (!alphanumeric.test(input.value)) {
+            this.addErrorMsg(input, alphanumericMsg)
           }
 
-          break;
+          break
         default:
-          var msg = `${input.name} is not a ${option.type}.`
+          let typeofMsg = `${input.name} is not a ${option.type}.`
 
-          if ( typeof(input.value) != option.type ) {
-            this.addErrorMsg( input, msg );
+          if (typeof (input.value) !== option.type) {
+            this.addErrorMsg(input, typeofMsg)
           }
       }
     },
-    minimum:  function ( input, option ) {
-      switch ( input.type ) {
-        case "number":
-          var msg = `${ input.name } must be greater than ${ option.minimum }.`
-
-          if ( parseInt(input.value) <= option.minimum ) {
-            this.addErrorMsg( input, msg );
-          }
-          break;
-        default:
-          var msg = `${input.name} must be longer than ${option.minimum} characters.`
-
-          if ( input.value.length < option.minimum ) {
-            this.addErrorMsg( input, msg );
-          }
-      }
-    },
-    maximum:  function ( input, option ) {
-      switch ( input.type ) {
+    minimum:  function (input, option) {
+      switch (input.type) {
         case 'number':
-          var msg = `${input.name } must not be more than ${option.maximum}`
+          let minNumberMsg = `${input.name} must be greater than ${option.minimum}.`
 
-          if ( parseInt(input.value) > option.maximum ) {
-            this.addErrorMsg( input, msg );
+          if (parseInt(input.value) <= option.minimum) {
+            this.addErrorMsg(input, minNumberMsg)
           }
-          break;
+
+          break
         default:
-          var msg = `${input.name} must not be longer than ${option.maximum} characters.`
+          let minimumMsg = `${input.name} must be longer than ${option.minimum} characters.`
 
-          if ( input.value.length > option.maximum ) {
-            this.addErrorMsg( input, msg );
+          if (input.value.length < option.minimum) {
+            this.addErrorMsg(input, minimumMsg)
           }
       }
     },
-    equals:   function ( input, option ) {
-      var msg = `${input.name} is not equal to ${option.equals}`
+    maximum:  function (input, option) {
+      switch (input.type) {
+        case 'number':
+          let maxNumberMsg = `${input.name} must not be more than ${option.maximum}`
 
-      if ( !(input.value === option.equals) ) {
-        this.addErrorMsg(input, msg);
+          if (parseInt(input.value) > option.maximum) {
+            this.addErrorMsg(input, maxNumberMsg)
+          }
+
+          break
+        default:
+          var maximumMsg = `${input.name} must not be longer than ${option.maximum} characters.`
+
+          if (input.value.length > option.maximum) {
+            this.addErrorMsg(input, maximumMsg)
+          }
       }
     },
-    isSameAs: function ( input, option ) {
+    equals:   function (input, option) {
+      let equalsMsg = `${input.name} is not equal to ${option.equals}`
+
+      if (!(input.value === option.equals)) {
+        this.addErrorMsg(input, equalsMsg)
+      }
+    },
+    isSameAs: function (input, option) {
       var msg = `${input.name} is not equal to ${option.isSameAs}`
 
-      if ( !(input.value === form[option.isSameAs].value) ) {
-        this.addErrorMsg(input, msg);
+      if (!(input.value === this.form[option.isSameAs].value)) {
+        this.addErrorMsg(input, msg)
       }
-    },
+    }
   },
 
   validate: function () {
-    this.errorMsgs = [];
+    this.errorMsgs = []
 
-    for ( let el of this.registeredTraits ) {
-      let field = this.form[el.name];
+    for (let el of this.registeredTraits) {
+      let field = this.form[el.name]
       this.isInputValid(field, el.traits)
     }
 
-    if ( !this.isValid() ) {
-      this.renderErrors();
-      return Promise.reject(this.errorMsgs);
+    if (!this.isValid()) {
+      this.renderErrors()
+      return Promise.reject(this.errorMsgs)
     }
 
-    return Promise.resolve(this.form);
+    return Promise.resolve(this.form)
   },
 
   /**
@@ -235,84 +240,80 @@ const FormGuard = {
    * @return {undefined}
    */
   renderErrors: function () {
-
     // Remove Error Messages
     this._removeFgErrorMsgs()
 
-    this._forEach(this.errorMsgs, function ( error ) {
+    this._forEach(this.errorMsgs, function (error) {
       // TODO: Extract the if statements into their own functions
 
-      let errorNode = document.createElement("p");
+      let errorNode = document.createElement('p')
 
-      if ( typeof(error) === "object" ) {
+      if ((typeof error) === 'object') {
         let inputContainer = error.input.parentElement
 
         // Add Classes
-        error.input.parentElement.classList.add('has-error');
+        error.input.parentElement.classList.add('has-error')
         error.input.classList.add('has-error')
 
         // Add error node to GrandParent
-        errorNode.innerHTML = error.msg;
-        errorNode.classList.add('fgErrorMsg');
-        errorNode.style.color = 'crimson';
+        errorNode.innerHTML = error.msg
+        errorNode.classList.add('fgErrorMsg')
+        errorNode.style.color = 'crimson'
 
         inputContainer.insertBefore(
           errorNode, error.input
-        );
-
+        )
       }
 
-      if ( formGrdErrEl && typeof(error) !== "object" ) {
-
-        let errorFragment = document.createDocumentFragment();
+      if (window.formGrdErrEl && (typeof error) !== 'object') {
+        let errorFragment = document.createDocumentFragment()
 
         // Add error node to fragment
-        errorNode.innerHTML = error;
-        errorNode.style.color = 'crimson';
-        errorFragment.appendChild(errorNode);
+        errorNode.innerHTML = error
+        errorNode.style.color = 'crimson'
+        errorFragment.appendChild(errorNode)
 
-        formGrdErrEl.appendChild(errorFragment);
-
+        window.formGrdErrEl.appendChild(errorFragment)
       }
-
     })
-
   },
 
   isValid: function () { return this.errorMsgs.length <= 0 },
 
-  addErrorMsg: function ( input, msg ) {
+  addErrorMsg: function (input, msg) {
     this.errorMsgs.push({
       input: input,
-      msg: msg
-    });
+      msg:   msg
+    })
   },
 
-  _forEach: function ( array, callback ) {
+  _forEach: function (array, callback) {
     for (var index = 0; index < array.length; index++) {
-      callback(array[index], index, array);
+      callback(array[index], index, array)
     }
   },
 
-  _exists: function ( thing ) {
-    if (typeof thing === "object"){
+  _exists: function (thing) {
+    if ((typeof thing) === 'object') {
       return Object.keys(thing).length > 0
     }
 
-    return (typeof thing !== "undefined" && thing !== null && thing.length > 0);
+    return (
+      (typeof thing) !== 'undefined' && thing !== null && thing.length > 0
+    )
   },
 
   _removeFgErrorMsgs: function () {
     let fgErrorMsgs = document.querySelectorAll('.fgErrorMsg')
 
-    if ( this._exists(fgErrorMsgs) ) {
-      this._forEach( fgErrorMsgs, ( errorMsgEl ) => {
+    if (this._exists(fgErrorMsgs)) {
+      this._forEach(fgErrorMsgs, (errorMsgEl) => {
         errorMsgEl.parentElement.removeChild(errorMsgEl)
       })
     }
 
-    if ( formGrdErrEl ) {
-      formGrdErrEl.innerHTML = '';
+    if (window.formGrdErrEl) {
+      window.formGrdErrEl.innerHTML = ''
     }
   }
 
